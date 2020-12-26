@@ -3,12 +3,17 @@ import { Form, Formik } from "formik";
 import {
   Box,
   Button,
+  Link,
+  Flex,
 } from "@chakra-ui/react";
 import { Wrapper } from "../components/Wrapper";
 import { InputField } from "../components/InputField";
 import { useLoginMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from 'next/router'
+import { withUrqlClient } from "next-urql";
+import { createUrqlClient } from "../utils/createUrqlClient";
+import NextLink from "next/link";
 
 
 export const Login: React.FC<{}> = ({}) => {
@@ -17,7 +22,7 @@ export const Login: React.FC<{}> = ({}) => {
   return (
     <Wrapper variant="small">
       <Formik
-        initialValues={{ username: "", password: "" }}
+        initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {
           const response = await login(values);
           if (response.data?.login.errors) {
@@ -30,9 +35,9 @@ export const Login: React.FC<{}> = ({}) => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              name="username"
-              placeholder="username"
-              label="Username"
+              name="usernameOrEmail"
+              placeholder="username or Email"
+              label="Username or email"
             />
             <Box mt={4}>
               <InputField
@@ -41,6 +46,7 @@ export const Login: React.FC<{}> = ({}) => {
                 label="Password"
               />
             </Box>
+            
             <Button
               mt={4}
               type="submit"
@@ -49,6 +55,11 @@ export const Login: React.FC<{}> = ({}) => {
             >
               login
             </Button>
+            <Flex>
+            <NextLink href="/forgot-password">
+                  <Link ml={'auto'}>Forgot Password</Link>
+            </NextLink>
+            </Flex>
           </Form>
         )}
       </Formik>
@@ -56,4 +67,4 @@ export const Login: React.FC<{}> = ({}) => {
   );
 };
 
-export default Login;
+export default withUrqlClient(createUrqlClient)(Login);
